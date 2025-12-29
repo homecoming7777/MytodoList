@@ -1,0 +1,63 @@
+bghit ndirha hit haja ma3ajbani hhhhhhh
+
++goals:
+      -bghit ndir tasks li baghi ndir fnhar
+      -dakchi li dakhlt kib9a msejel n9dar nrja3 lih
+      -katsejl tarikh li ktbt fih task o m3a 00:00 
+      kiwssalni notification wach kmlt wla ga3ma kmlt
+      -fach kandir chi completed kithat f section bohdo bach n3raf 
+      chno ba9i o chno kmlt
+      -flkhr dyal simana kiwssalni rapport dyal tasks li kmlt
+      o li madertch
+
+
++features:
+          -add task.
+          -ila drt completed ymchi lblassa li kikono fiha li kmlt
+          -delete task machi direct hta kan2akdha
+          -edit task
+          -localstorage 
+          -calendar
+          -habada chi ad3iya wla adkar bach tmreg chwiya
+
+
++design:
+        -dark mode(asslan)
+        -input fin ndakhl task + add button
+        -list dyal tasks
+        -task(chno fih):
+                        -checkbox.
+                        -text.
+                        -edit button.
+                        -delete button.
+        -sidebar:
+                 -calendar
+                 -page li fiha tasks li drt f simana
+                 habada ykono ihssa2iyat 3la ltizam dyalk
+
+
++data structure = {
+   id:,
+   text:task,
+   completed:false(default),
+   time:yyyy-mm-dd hour:min:seconds,
+}          
+
+
++tech stack:
+           -Reactjs + localstorage.
+
+
++componenets:
+            -header
+            -taskInput
+            -tasklist
+            -sideBar
+            -section fiha li kmlo
+            -button reset kimssah kolchi(ga3 tasks)           
+
+
++pages:
+       -dashboard:statistics
+       -daily
+       -weekly
