@@ -27,7 +27,9 @@ export default function HeroSection() {
         </div>
 
         <button className="hidden md:block px-6 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-full">
-          Start free trial
+         <a href="https://abdessamadbenzekri.netlify.app/">
+         Contact Me
+          </a>
         </button>
 
         <button
@@ -100,7 +102,9 @@ export default function HeroSection() {
 
         <div className="flex items-center gap-4 mt-8">
           <button className="bg-red-600 hover:bg-red-700 text-white rounded-full px-7 h-11">
+          <Link to="/Tasks">
             Get started
+          </Link>
           </button>
         </div>
 
