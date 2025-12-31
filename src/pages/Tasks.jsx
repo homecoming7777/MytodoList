@@ -3,9 +3,6 @@ import Navbar from "../components/Navbar";
 import TodoItem from "../components/TodoItem";
 
 export default function Tasks() {
-  const today = new Date();
-  const todayStr = today.toISOString().slice(0, 10);
-
   const [todos, setTodos] = useState(() => {
     const saved = localStorage.getItem("todos");
     return saved ? JSON.parse(saved) : [];
@@ -14,52 +11,25 @@ export default function Tasks() {
   const [input, setInput] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-
-  const [filter, setFilter] = useState("all");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [priority, setPriority] = useState("Low");
+  const [tags, setTags] = useState("");
+  const [notes, setNotes] = useState("");
 
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editTime, setEditTime] = useState("");
+  const [editPriority, setEditPriority] = useState("Low");
+  const [editTags, setEditTags] = useState("");
+  const [editNotes, setEditNotes] = useState("");
 
-  // For month navigation
-  const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
-  const [calendarYear, setCalendarYear] = useState(today.getFullYear());
+  const [filter, setFilter] = useState("all");
+  const [selectedDate, setSelectedDate] = useState(null);
 
-  // Browser notifications
-  useEffect(() => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-  }, []);
+  const todayStr = new Date().toISOString().slice(0, 10);
 
-  // Save todos in localStorage
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
-
-  // Notifications
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      todos.forEach((todo) => {
-        if (!todo.completed && !todo.notified && todo.date && todo.time) {
-          const todoDateTime = new Date(`${todo.date}T${todo.time}`);
-          if (now >= todoDateTime && now - todoDateTime < 60000) {
-            if (Notification.permission === "granted") {
-              new Notification("Todo Reminder", { body: todo.text });
-            }
-            setTodos((prev) =>
-              prev.map((t) =>
-                t.id === todo.id ? { ...t, notified: true } : t
-              )
-            );
-          }
-        }
-      });
-    }, 60000);
-    return () => clearInterval(interval);
   }, [todos]);
 
   const addTodo = () => {
@@ -71,28 +41,30 @@ export default function Tasks() {
         text: input,
         completed: false,
         date: date || todayStr,
-        time: time || "",
-        notified: false,
+        time,
+        priority,
+        tags,
+        notes,
       },
     ]);
     setInput("");
     setDate("");
     setTime("");
+    setPriority("Low");
+    setTags("");
+    setNotes("");
   };
 
   const deleteTodo = (id) => setTodos(todos.filter((t) => t.id !== id));
-  const toggleCompleted = (id) =>
-    setTodos(
-      todos.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      )
-    );
 
   const startEdit = (todo) => {
     setEditingId(todo.id);
     setEditText(todo.text);
     setEditDate(todo.date);
     setEditTime(todo.time || "");
+    setEditPriority(todo.priority || "Low");
+    setEditTags(todo.tags || "");
+    setEditNotes(todo.notes || "");
   };
 
   const saveEdit = (id) => {
@@ -103,8 +75,10 @@ export default function Tasks() {
               ...t,
               text: editText,
               date: editDate || todayStr,
-              time: editTime || "",
-              notified: false,
+              time: editTime,
+              priority: editPriority,
+              tags: editTags,
+              notes: editNotes,
             }
           : t
       )
@@ -112,88 +86,84 @@ export default function Tasks() {
     setEditingId(null);
   };
 
+  const toggleCompleted = (id) => {
+    setTodos(
+      todos.map((t) =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      )
+    );
+  };
+
   const filteredTodos = todos.filter((t) => {
     if (selectedDate) return t.date === selectedDate;
-    switch (filter) {
-      case "active":
-        return !t.completed;
-      case "completed":
-        return t.completed;
-      case "today":
-        return t.date === todayStr;
-      default:
-        return true;
-    }
+    if (filter === "all") return true;
+    if (filter === "active") return !t.completed;
+    if (filter === "completed") return t.completed;
+    if (filter === "today") return t.date === todayStr;
   });
 
-  // Calendar helpers
-  const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
-  const monthStart = new Date(calendarYear, calendarMonth, 1).getDay(); // 0-6, Sun-Sat
-
-  const goPrevMonth = () => {
-    if (calendarMonth === 0) {
-      setCalendarMonth(11);
-      setCalendarYear(calendarYear - 1);
-    } else {
-      setCalendarMonth(calendarMonth - 1);
-    }
-  };
-
-  const goNextMonth = () => {
-    if (calendarMonth === 11) {
-      setCalendarMonth(0);
-      setCalendarYear(calendarYear + 1);
-    } else {
-      setCalendarMonth(calendarMonth + 1);
-    }
-  };
+  const daysInMonth = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth() + 1,
+    0
+  ).getDate();
 
   return (
     <>
       <Navbar />
-
-      <div className="min-h-screen bg-black text-white p-6 max-w-md mx-auto">
-        {/* Add task */}
-        <div className="flex flex-col gap-2">
+      <div className="min-h-screen bg-black text-white p-6 max-w-3xl mx-auto">
+        <div className="bg-gray-900 p-4 rounded-xl shadow-md flex flex-col md:grid md:grid-cols-3 lg:grid lg:grid-cols-1 gap-3 items-center">
           <input
+            type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Task description"
-            className="bg-gray-900 border border-gray-700 p-2 rounded"
+            className="w-full flex-1 bg-gray-800 border border-gray-700 p-2 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-600"
           />
-          <div className="flex gap-2">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="bg-gray-900 border border-gray-700 p-2 rounded flex-1"
-            />
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="bg-gray-900 border border-gray-700 p-2 rounded flex-1"
-            />
-          </div>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
+          />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="bg-gray-800 w-full border border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
+          />
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            className="bg-gray-800 w-full border border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <input
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Notes"
+            className="bg-gray-800 w-full border border-gray-700 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
+          />
           <button
             onClick={addTodo}
-            className="bg-white text-black py-2 rounded"
+            className="bg-red-600 w-full hover:bg-red-700 active:bg-red-800 transition px-4 py-2 rounded-lg font-semibold"
           >
-            Add Task
+            Add
           </button>
         </div>
 
-        {/* Filters */}
         <div className="flex justify-center gap-2 mt-4 flex-wrap">
-          {["all", "active", "today", "completed"].map((f) => (
+          {["all", "active", "completed", "today"].map((f) => (
             <button
               key={f}
-              onClick={() => {
-                setFilter(f);
-                setSelectedDate(null);
-              }}
-              className={`px-3 py-1 rounded ${
-                filter === f ? "bg-gray-700" : "bg-gray-800"
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1 rounded-full font-medium transition ${
+                filter === f
+                  ? "bg-red-600 text-white"
+                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
               }`}
             >
               {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -201,12 +171,11 @@ export default function Tasks() {
           ))}
         </div>
 
-        {/* Todo list */}
-        <ul className="mt-6 space-y-3">
-          {filteredTodos.map((todo) => (
+        <ul className="mt-6 space-y-4">
+          {filteredTodos.map((t) => (
             <TodoItem
-              key={todo.id}
-              todo={todo}
+              key={t.id}
+              todo={t}
               toggleCompleted={toggleCompleted}
               startEdit={startEdit}
               deleteTodo={deleteTodo}
@@ -217,64 +186,45 @@ export default function Tasks() {
               setEditDate={setEditDate}
               editTime={editTime}
               setEditTime={setEditTime}
+              editPriority={editPriority}
+              setEditPriority={setEditPriority}
+              editTags={editTags}
+              setEditTags={setEditTags}
+              editNotes={editNotes}
+              setEditNotes={setEditNotes}
               saveEdit={saveEdit}
             />
           ))}
         </ul>
 
-        {/* Mini calendar */}
-        <div className="mt-8">
-          <div className="flex justify-between items-center mb-2">
-            <button onClick={goPrevMonth} className="px-3 py-1 bg-gray-700 rounded">
-              Prev
-            </button>
-            <span>
-              {new Date(calendarYear, calendarMonth).toLocaleString("default", {
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-            <button onClick={goNextMonth} className="px-3 py-1 bg-gray-700 rounded">
-              Next
-            </button>
-          </div>
-
-          <div className="grid grid-cols-7 gap-1">
-            {Array.from({ length: monthStart }).map((_, i) => (
-              <div key={`empty-${i}`} />
-            ))}
-            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-              const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, "0")}-${String(
-                d
-              ).padStart(2, "0")}`;
-              const hasTask = todos.some((t) => t.date === dateStr);
-
-              return (
-                <button
-                  key={d}
-                  onClick={() => {
-                    setSelectedDate(dateStr);
-                    setFilter("all");
-                  }}
-                  className={`w-10 h-10 rounded ${
-                    selectedDate === dateStr
-                      ? "bg-purple-600"
-                      : hasTask
-                      ? "border border-purple-500"
-                      : "bg-gray-800"
-                  }`}
-                >
-                  {d}
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-8 flex flex-wrap gap-2 justify-center">
+          {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
+            const dateStr = `${new Date().getFullYear()}-${String(
+              new Date().getMonth() + 1
+            ).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+            const hasTask = todos.some((t) => t.date === dateStr);
+            return (
+              <button
+                key={d}
+                onClick={() => setSelectedDate(dateStr)}
+                className={`w-10 h-10 rounded-lg font-medium transition ${
+                  selectedDate === dateStr
+                    ? "bg-red-600 text-white"
+                    : hasTask
+                    ? "border-2 border-red-500 text-white"
+                    : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                }`}
+              >
+                {d}
+              </button>
+            );
+          })}
         </div>
 
         {selectedDate && (
           <button
             onClick={() => setSelectedDate(null)}
-            className="mt-4 w-full bg-gray-700 py-2 rounded"
+            className="mt-4 px-4 py-2 bg-gray-700 rounded-lg hover:bg-gray-600 transition"
           >
             Clear Date Filter
           </button>
