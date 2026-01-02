@@ -26,7 +26,7 @@ export default function HeroSection() {
         </div>
 
         <button className="hidden md:block px-6 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-full">
-         <a href="https://abdessamadbenzekri.netlify.app/">
+         <a href="https://ab-portfolio-eta.vercel.app/">
          Contact Me
           </a>
         </button>
