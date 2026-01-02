@@ -15,7 +15,8 @@ export default function Tasks() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [input, setInput] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [taskDescription, setTaskDescription] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [priority, setPriority] = useState("Low");
@@ -23,7 +24,8 @@ export default function Tasks() {
   const [notes, setNotes] = useState("");
 
   const [editingId, setEditingId] = useState(null);
-  const [editText, setEditText] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [editDate, setEditDate] = useState("");
   const [editTime, setEditTime] = useState("");
   const [editPriority, setEditPriority] = useState("Low");
@@ -41,12 +43,16 @@ export default function Tasks() {
   }, [todos]);
 
   const addTodo = () => {
-    if (!input.trim()) return;
+    if (!taskName.trim()) {
+      alert("Task name is required!");
+      return;
+    }
     setTodos([
       ...todos,
       {
         id: Date.now(),
-        text: input,
+        name: taskName,
+        description: taskDescription,
         completed: false,
         date: date || todayStr,
         time,
@@ -55,7 +61,9 @@ export default function Tasks() {
         notes,
       },
     ]);
-    setInput("");
+    // Reset all form fields
+    setTaskName("");
+    setTaskDescription("");
     setDate("");
     setTime("");
     setPriority("Low");
@@ -67,7 +75,8 @@ export default function Tasks() {
 
   const startEdit = (todo) => {
     setEditingId(todo.id);
-    setEditText(todo.text);
+    setEditName(todo.name || "");
+    setEditDescription(todo.description || "");
     setEditDate(todo.date);
     setEditTime(todo.time || "");
     setEditPriority(todo.priority || "Low");
@@ -76,12 +85,17 @@ export default function Tasks() {
   };
 
   const saveEdit = (id) => {
+    if (!editName.trim()) {
+      alert("Task name is required!");
+      return;
+    }
     setTodos(
       todos.map((t) =>
         t.id === id
           ? {
               ...t,
-              text: editText,
+              name: editName,
+              description: editDescription,
               date: editDate || todayStr,
               time: editTime,
               priority: editPriority,
@@ -123,6 +137,13 @@ export default function Tasks() {
   const clearAllTodos = () => {
     if (window.confirm("Are you sure you want to delete all tasks? This cannot be undone.")) {
       setTodos([]);
+    }
+  };
+
+  // Function to handle Enter key press
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && taskName.trim()) {
+      addTodo();
     }
   };
 
@@ -181,18 +202,32 @@ export default function Tasks() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2 lg:col-span-1">
                   <label className="text-sm font-medium text-gray-400 block flex items-center gap-1">
-                    <span>Task Description</span>
+                    <span>Task Name</span>
                     <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="What needs to be done?"
+                    value={taskName}
+                    onChange={(e) => setTaskName(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="Enter task title..."
                     className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                    onKeyDown={(e) => e.key === 'Enter' && addTodo()}
+                  />
+                </div>
+                
+                <div className="space-y-2 md:col-span-2 lg:col-span-2">
+                  <label className="text-sm font-medium text-gray-400 block">
+                    Task Description
+                  </label>
+                  <input
+                    type="text"
+                    value={taskDescription}
+                    onChange={(e) => setTaskDescription(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder="Describe what needs to be done..."
+                    className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
                 
@@ -245,21 +280,31 @@ export default function Tasks() {
                   <input
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Additional details..."
+                    placeholder="Additional details, links, references..."
                     className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               </div>
               
-              <button
-                onClick={addTodo}
-                className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 active:scale-[0.98] transition-all duration-200 rounded-xl font-semibold text-lg shadow-lg shadow-red-900/30 flex items-center justify-center gap-2 group"
-              >
-                <span>Add Task</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-400">
+                  Press <kbd className="px-2 py-1 bg-gray-800 rounded text-xs">Enter</kbd> to add task
+                </p>
+                <button
+                  onClick={addTodo}
+                  disabled={!taskName.trim()}
+                  className={`px-8 py-3 rounded-xl font-semibold text-lg shadow-lg flex items-center justify-center gap-2 group transition-all duration-200 ${
+                    taskName.trim()
+                      ? "bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 hover:shadow-red-900/30 active:scale-[0.98] cursor-pointer"
+                      : "bg-gray-700 cursor-not-allowed opacity-50"
+                  }`}
+                >
+                  <span>Add Task</span>
+                  <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center justify-between">
@@ -344,8 +389,10 @@ export default function Tasks() {
                       startEdit={startEdit}
                       deleteTodo={deleteTodo}
                       editingId={editingId}
-                      editText={editText}
-                      setEditText={setEditText}
+                      editName={editName}
+                      setEditName={setEditName}
+                      editDescription={editDescription}
+                      setEditDescription={setEditDescription}
                       editDate={editDate}
                       setEditDate={setEditDate}
                       editTime={editTime}

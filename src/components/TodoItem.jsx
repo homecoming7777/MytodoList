@@ -6,8 +6,10 @@ export default function TodoItem({
   startEdit,
   deleteTodo,
   editingId,
-  editText,
-  setEditText,
+  editName,
+  setEditName,
+  editDescription,
+  setEditDescription,
   editDate,
   setEditDate,
   editTime,
@@ -22,7 +24,7 @@ export default function TodoItem({
 }) {
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const textRef = useRef(null);
+  const descriptionRef = useRef(null);
 
   const priorityColors = {
     High: "bg-gradient-to-r from-red-600 to-red-500",
@@ -49,12 +51,12 @@ export default function TodoItem({
   };
 
   useEffect(() => {
-    if (textRef.current) {
+    if (descriptionRef.current && todo.description) {
       setIsOverflowing(
-        textRef.current.scrollHeight > textRef.current.clientHeight
+        descriptionRef.current.scrollHeight > descriptionRef.current.clientHeight
       );
     }
-  }, [todo.text, expanded]);
+  }, [todo.description, expanded]);
 
   if (editingId === todo.id) {
     return (
@@ -67,11 +69,21 @@ export default function TodoItem({
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-400 block">Task Description</label>
+          <div className="space-y-2 md:col-span-2 lg:col-span-1">
+            <label className="text-sm font-medium text-gray-400 block">Task Name *</label>
             <input
-              value={editText}
-              onChange={(e) => setEditText(e.target.value)}
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+              placeholder="Enter task name"
+            />
+          </div>
+          
+          <div className="space-y-2 md:col-span-2 lg:col-span-2">
+            <label className="text-sm font-medium text-gray-400 block">Description</label>
+            <input
+              value={editDescription}
+              onChange={(e) => setEditDescription(e.target.value)}
               className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
               placeholder="Enter task description"
             />
@@ -164,6 +176,7 @@ export default function TodoItem({
       ${todo.completed ? 'opacity-75' : ''}
     `}>
       <div className="flex items-start gap-4">
+        {/* Checkbox */}
         <div className="relative mt-1">
           <input
             type="checkbox"
@@ -190,46 +203,60 @@ export default function TodoItem({
           )}
         </div>
 
+        {/* Task Content */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-col gap-3">
+            {/* Task name and description */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <span
-                  ref={textRef}
-                  className={`
-                    text-lg font-medium break-words whitespace-normal
-                    ${todo.completed ? "line-through text-gray-500" : "text-gray-200"}
-                    ${expanded ? "" : "line-clamp-2"}
-                    transition-all duration-200
-                  `}
-                >
-                  {todo.text}
-                </span>
+                <h4 className={`
+                  text-lg font-bold break-words whitespace-normal
+                  ${todo.completed ? "line-through text-gray-500" : "text-white"}
+                `}>
+                  {todo.name || "Untitled Task"}
+                </h4>
                 
-                {isOverflowing && (
-                  <button
-                    onClick={() => setExpanded(!expanded)}
-                    className="mt-2 text-sm bg-gray-700/50 hover:bg-gray-700 px-3 py-1 rounded-lg font-medium text-gray-300 hover:text-white transition-all duration-200 flex items-center gap-2 group"
-                  >
-                    {expanded ? (
-                      <>
-                        <span>Show less</span>
-                        <svg className="w-4 h-4 transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                        </svg>
-                      </>
-                    ) : (
-                      <>
-                        <span>Show more</span>
-                        <svg className="w-4 h-4 transform group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </>
+                {todo.description && (
+                  <>
+                    <p
+                      ref={descriptionRef}
+                      className={`
+                        text-gray-400 mt-1 break-words whitespace-normal
+                        ${todo.completed ? "line-through" : ""}
+                        ${expanded ? "" : "line-clamp-2"}
+                        transition-all duration-200
+                      `}
+                    >
+                      {todo.description}
+                    </p>
+                    
+                    {isOverflowing && (
+                      <button
+                        onClick={() => setExpanded(!expanded)}
+                        className="mt-2 text-sm bg-gray-700/50 hover:bg-gray-700 px-3 py-1 rounded-lg font-medium text-gray-300 hover:text-white transition-all duration-200 flex items-center gap-2 group"
+                      >
+                        {expanded ? (
+                          <>
+                            <span>Show less</span>
+                            <svg className="w-4 h-4 transform group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                            </svg>
+                          </>
+                        ) : (
+                          <>
+                            <span>Show more</span>
+                            <svg className="w-4 h-4 transform group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </>
+                        )}
+                      </button>
                     )}
-                  </button>
+                  </>
                 )}
               </div>
               
+              {/* Priority Badge */}
               {todo.priority && (
                 <div className={`${priorityColors[todo.priority]} text-white px-3 py-1.5 rounded-xl flex items-center gap-2 text-sm font-medium shadow-lg`}>
                   {priorityIcons[todo.priority]}
@@ -238,7 +265,9 @@ export default function TodoItem({
               )}
             </div>
 
+            {/* Metadata */}
             <div className="flex flex-wrap items-center gap-3 mt-2">
+              {/* Date & Time */}
               {(todo.date || todo.time) && (
                 <div className="flex items-center gap-2 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -259,6 +288,7 @@ export default function TodoItem({
                 </div>
               )}
 
+              {/* Tags */}
               {todo.tags && (
                 <div className="flex items-center gap-2 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -270,6 +300,7 @@ export default function TodoItem({
                 </div>
               )}
 
+              {/* Notes */}
               {todo.notes && (
                 <div className="flex items-start gap-2 text-gray-400">
                   <svg className="w-4 h-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,6 +315,7 @@ export default function TodoItem({
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => startEdit(todo)}
