@@ -127,7 +127,6 @@ export default function Dashboard({ todos }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-gray-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
             <div>
@@ -179,7 +178,6 @@ export default function Dashboard({ todos }) {
           </div>
         </div>
 
-        {/* Main Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <StatCard
             title="Total Tasks"
@@ -214,9 +212,7 @@ export default function Dashboard({ todos }) {
           />
         </div>
 
-        {/* Charts and Detailed Stats */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          {/* Priority Distribution */}
           <div className="lg:col-span-2 bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-gray-300 flex items-center gap-2">
@@ -227,7 +223,6 @@ export default function Dashboard({ todos }) {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Priority Chart */}
               <div>
                 <h3 className="text-lg font-medium text-gray-300 mb-4">Priority Breakdown</h3>
                 <div className="space-y-4">
@@ -250,7 +245,6 @@ export default function Dashboard({ todos }) {
                 </div>
               </div>
               
-              {/* Status Chart */}
               <div>
                 <h3 className="text-lg font-medium text-gray-300 mb-4">Task Status</h3>
                 <div className="space-y-6">
@@ -306,7 +300,6 @@ export default function Dashboard({ todos }) {
             </div>
           </div>
 
-          {/* Insights Panel */}
           <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
             <h2 className="text-xl font-semibold text-gray-300 flex items-center gap-2 mb-6">
               <PieChartIcon className="w-5 h-5 text-red-500" />
@@ -314,7 +307,6 @@ export default function Dashboard({ todos }) {
             </h2>
             
             <div className="space-y-6">
-              {/* Most Productive Day */}
               <div className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-900/30 rounded-xl border border-gray-700/50">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="p-2 bg-purple-600/20 rounded-lg">
@@ -333,7 +325,6 @@ export default function Dashboard({ todos }) {
                 </p>
               </div>
               
-              {/* Top Categories */}
               <div className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-900/30 rounded-xl border border-gray-700/50">
                 <h3 className="font-medium text-gray-300 mb-4">Top Categories</h3>
                 <div className="space-y-3">
@@ -365,7 +356,6 @@ export default function Dashboard({ todos }) {
                 </div>
               </div>
               
-              {/* Upcoming Tasks */}
               <div className="p-4 bg-gradient-to-br from-gray-800/50 to-gray-900/30 rounded-xl border border-gray-700/50">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -388,7 +378,6 @@ export default function Dashboard({ todos }) {
           </div>
         </div>
 
-        {/* Recent Activity */}
         <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-300 flex items-center gap-2">
@@ -452,7 +441,6 @@ export default function Dashboard({ todos }) {
           </div>
         </div>
 
-        {/* Summary */}
         <div className="bg-gradient-to-r from-gray-800/40 to-gray-900/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>

@@ -130,7 +130,6 @@ export default function Tasks() {
     <>
       <Navbar />
       
-      {/* View Toggle Button */}
       <button
         onClick={() => setShowDashboard(!showDashboard)}
         className="fixed top-24 right-4 z-40 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-900/30 transition-all duration-200 flex items-center gap-2 group shadow-lg shadow-red-900/20"
@@ -159,7 +158,6 @@ export default function Tasks() {
               </h1>
               <p className="text-gray-400">Organize your day with precision</p>
               
-              {/* Quick Stats */}
               <div className="flex flex-wrap justify-center gap-4 mt-6">
                 <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-xl px-4 py-2 flex items-center gap-2">
                   <ListTodo className="w-4 h-4 text-blue-400" />
@@ -176,7 +174,6 @@ export default function Tasks() {
               </div>
             </header>
 
-            {/* Task Input Form */}
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mb-8 shadow-2xl shadow-red-900/10">
               <h2 className="text-xl font-semibold mb-6 text-gray-300 flex items-center gap-2">
                 <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
@@ -265,7 +262,6 @@ export default function Tasks() {
               </button>
             </div>
 
-            {/* Filter and Actions Bar */}
             <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center justify-between">
               <div className="flex flex-wrap gap-3">
                 {["all", "active", "completed", "today"].map((f) => (
@@ -321,7 +317,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Todo List */}
             <div className="space-y-4 mb-10">
               {filteredTodos.length === 0 ? (
                 <div className="text-center py-12 bg-gray-800/30 rounded-2xl border border-gray-700/50">
@@ -368,7 +363,6 @@ export default function Tasks() {
               )}
             </div>
 
-            {/* Calendar Section */}
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-300 flex items-center gap-2">
@@ -447,7 +441,6 @@ export default function Tasks() {
               )}
             </div>
 
-            {/* Stats Footer */}
             <div className="mt-8 pt-6 border-t border-gray-800 text-center text-gray-500 text-sm">
               <div className="flex flex-wrap justify-center gap-6">
                 <div className="flex items-center gap-2">
