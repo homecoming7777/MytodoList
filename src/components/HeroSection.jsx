@@ -23,7 +23,6 @@ export default function HeroSection() {
         <div className="hidden md:flex items-center gap-8 transition duration-500">
           <Link to="/" className="hover:text-red-500 transition text-red-500">Home</Link>
           <Link to="/Tasks" className="hover:text-red-500 transition">Tasks</Link>
-          <Link to="/Dashboard" className="hover:text-red-500 transition">Dashboard</Link>
         </div>
 
         <button className="hidden md:block px-6 py-2.5 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-full">
@@ -62,7 +61,6 @@ export default function HeroSection() {
       >
         <Link to="/">Home</Link>
         <Link to="/Tasks">tasks</Link>
-        <Link to="/Dashboard">Dashboard</Link>
 
         <button
           className="active:ring-3 active:ring-white aspect-square size-10 p-1 items-center justify-center bg-red-600 hover:bg-red-700 transition text-white rounded-md flex"

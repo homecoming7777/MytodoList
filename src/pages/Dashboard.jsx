@@ -86,7 +86,7 @@ export default function Dashboard({ todos }) {
   );
 
   const StatCard = ({ title, value, icon: Icon, change, color, subtitle }) => (
-    <div className="bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-gray-600/50 transition-all duration-200">
+    <div className="bg-gray-800/40 overflow-x-auto backdrop-blur-sm border border-gray-700/50 rounded-2xl p-6 hover:border-gray-600/50 transition-all duration-200">
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-sm font-medium text-gray-400 mb-1">{title}</p>
@@ -136,7 +136,7 @@ export default function Dashboard({ todos }) {
               <p className="text-gray-400">Track your productivity and task management insights</p>
             </div>
             
-            <div className="flex items-center gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-3">
               <div className="flex bg-gray-800/50 rounded-xl p-1">
                 {['day', 'week', 'month', 'year'].map((range) => (
                   <button
@@ -152,7 +152,6 @@ export default function Dashboard({ todos }) {
                   </button>
                 ))}
               </div>
-              
               <div className="flex bg-gray-800/50 rounded-xl p-1">
                 {['all', 'high', 'medium', 'low'].map((priority) => (
                   <button
