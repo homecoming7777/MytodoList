@@ -9,28 +9,23 @@ export default function Dashboard({ todos }) {
   const [timeRange, setTimeRange] = useState('week');
   const [priorityFilter, setPriorityFilter] = useState('all');
 
-  // Calculate statistics
   const totalTasks = todos.length;
   const completedTasks = todos.filter(t => t.completed).length;
   const pendingTasks = totalTasks - completedTasks;
   const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   
-  // Priority breakdown
   const highPriority = todos.filter(t => t.priority === 'High').length;
   const mediumPriority = todos.filter(t => t.priority === 'Medium').length;
   const lowPriority = todos.filter(t => t.priority === 'Low').length;
   
-  // Today's tasks
   const todayStr = new Date().toISOString().slice(0, 10);
   const todayTasks = todos.filter(t => t.date === todayStr);
   const todayCompleted = todayTasks.filter(t => t.completed).length;
   
-  // Overdue tasks (tasks with date < today and not completed)
   const overdueTasks = todos.filter(t => 
     t.date < todayStr && !t.completed
   ).length;
   
-  // Upcoming tasks (next 7 days)
   const nextWeek = new Date();
   nextWeek.setDate(nextWeek.getDate() + 7);
   const nextWeekStr = nextWeek.toISOString().slice(0, 10);
@@ -38,7 +33,6 @@ export default function Dashboard({ todos }) {
     t.date > todayStr && t.date <= nextWeekStr && !t.completed
   ).length;
   
-  // Most productive day
   const tasksByDay = todos.reduce((acc, task) => {
     const day = new Date(task.date).toLocaleDateString('en-US', { weekday: 'short' });
     acc[day] = (acc[day] || 0) + 1;
@@ -48,12 +42,10 @@ export default function Dashboard({ todos }) {
   const mostProductiveDay = Object.entries(tasksByDay)
     .sort(([,a], [,b]) => b - a)[0] || ['None', 0];
   
-  // Average completion time (mock calculation based on creation date)
   const recentCompleted = todos
     .filter(t => t.completed)
     .slice(-10);
   
-  // Categories from tags
   const allTags = todos.flatMap(t => 
     t.tags ? t.tags.split(',').map(tag => tag.trim().toLowerCase()) : []
   );
@@ -69,12 +61,10 @@ export default function Dashboard({ todos }) {
     .slice(0, 3)
     .map(([tag, count]) => ({ tag, count }));
   
-  // Recent activity (last 5 todos)
   const recentActivity = [...todos]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, 5);
   
-  // Productivity score (mock calculation)
   const productivityScore = Math.min(
     100,
     Math.round(

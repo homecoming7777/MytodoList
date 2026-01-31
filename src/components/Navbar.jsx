@@ -11,7 +11,8 @@ export default function Navbar() {
 
       <ul className="text-white text-sm md:flex hidden items-center gap-10">
         <Link to="/"><a className="hover:text-red-500 transition" >Home</a></Link>
-        <Link to="/Tasks"><a className="hover:text-red-500 text-red-500 transition" >Tasks</a></Link>
+        <Link to="/Tasks"><a className="hover:text-red-500 transition" >Tasks</a></Link>
+        <Link to="/GoalsPlanner"><a className="hover:text-red-500 transition" >GoalsPlanner</a></Link>
       </ul>
 
       <button
@@ -30,6 +31,7 @@ export default function Navbar() {
           <ul className="flex flex-col space-y-4 text-white text-lg">
             <Link to="/"><a  className="text-sm">Home</a></Link>
             <Link to="/Tasks"><a className="text-sm">Tasks</a></Link>
+            <Link to="/GoalsPlanner"><a className="text-sm">GoalsPlanner</a></Link>
           </ul>
 
           <button

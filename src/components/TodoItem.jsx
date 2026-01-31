@@ -176,7 +176,6 @@ export default function TodoItem({
       ${todo.completed ? 'opacity-75' : ''}
     `}>
       <div className="flex items-start gap-4">
-        {/* Checkbox */}
         <div className="relative mt-1">
           <input
             type="checkbox"
@@ -203,10 +202,8 @@ export default function TodoItem({
           )}
         </div>
 
-        {/* Task Content */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-col gap-3">
-            {/* Task name and description */}
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <h4 className={`
@@ -256,7 +253,6 @@ export default function TodoItem({
                 )}
               </div>
               
-              {/* Priority Badge */}
               {todo.priority && (
                 <div className={`${priorityColors[todo.priority]} text-white px-3 py-1.5 rounded-xl flex items-center gap-2 text-sm font-medium shadow-lg`}>
                   {priorityIcons[todo.priority]}
@@ -265,9 +261,7 @@ export default function TodoItem({
               )}
             </div>
 
-            {/* Metadata */}
             <div className="flex flex-wrap items-center gap-3 mt-2">
-              {/* Date & Time */}
               {(todo.date || todo.time) && (
                 <div className="flex items-center gap-2 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -288,7 +282,6 @@ export default function TodoItem({
                 </div>
               )}
 
-              {/* Tags */}
               {todo.tags && (
                 <div className="flex items-center gap-2 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -300,7 +293,6 @@ export default function TodoItem({
                 </div>
               )}
 
-              {/* Notes */}
               {todo.notes && (
                 <div className="flex items-start gap-2 text-gray-400">
                   <svg className="w-4 h-4 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -315,7 +307,6 @@ export default function TodoItem({
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => startEdit(todo)}
