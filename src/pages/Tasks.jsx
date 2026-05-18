@@ -6,13 +6,14 @@ import {
   BarChart3, Calendar, CheckCircle2, Clock, 
   TrendingUp, AlertCircle, ListTodo, Target,
   BarChart as BarChartIcon, PieChart as PieChartIcon,
-  Grid3x3, List
+  Grid3x3, List, AlertTriangle, Zap
 } from "lucide-react";
 
 export default function Tasks() {
   const [todos, setTodos] = useState(() => {
     const saved = localStorage.getItem("todos");
-    return saved ? JSON.parse(saved) : [];
+    const parsed = saved ? JSON.parse(saved) : [];
+    return parsed.map(t => ({ urgent: false, important: false, ...t }));
   });
 
   const [taskName, setTaskName] = useState("");
@@ -22,6 +23,8 @@ export default function Tasks() {
   const [priority, setPriority] = useState("Low");
   const [tags, setTags] = useState("");
   const [notes, setNotes] = useState("");
+  const [urgent, setUrgent] = useState(false);
+  const [important, setImportant] = useState(false);
 
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
@@ -31,10 +34,13 @@ export default function Tasks() {
   const [editPriority, setEditPriority] = useState("Low");
   const [editTags, setEditTags] = useState("");
   const [editNotes, setEditNotes] = useState("");
+  const [editUrgent, setEditUrgent] = useState(false);
+  const [editImportant, setEditImportant] = useState(false);
 
   const [filter, setFilter] = useState("all");
   const [selectedDate, setSelectedDate] = useState(null);
   const [showDashboard, setShowDashboard] = useState(false);
+  const [showMatrix, setShowMatrix] = useState(false);
 
   const todayStr = new Date().toISOString().slice(0, 10);
 
@@ -59,9 +65,11 @@ export default function Tasks() {
         priority,
         tags,
         notes,
+        urgent,
+        important,
       },
     ]);
-    // Reset all form fields
+    
     setTaskName("");
     setTaskDescription("");
     setDate("");
@@ -69,6 +77,8 @@ export default function Tasks() {
     setPriority("Low");
     setTags("");
     setNotes("");
+    setUrgent(false);
+    setImportant(false);
   };
 
   const deleteTodo = (id) => setTodos(todos.filter((t) => t.id !== id));
@@ -82,6 +92,8 @@ export default function Tasks() {
     setEditPriority(todo.priority || "Low");
     setEditTags(todo.tags || "");
     setEditNotes(todo.notes || "");
+    setEditUrgent(todo.urgent || false);
+    setEditImportant(todo.important || false);
   };
 
   const saveEdit = (id) => {
@@ -101,6 +113,8 @@ export default function Tasks() {
               priority: editPriority,
               tags: editTags,
               notes: editNotes,
+              urgent: editUrgent,
+              important: editImportant,
             }
           : t
       )
@@ -124,6 +138,20 @@ export default function Tasks() {
     if (filter === "today") return t.date === todayStr;
   });
 
+  const getQuadrant = (task) => {
+    if (task.urgent && task.important) return "do-first";
+    if (!task.urgent && task.important) return "schedule";
+    if (task.urgent && !task.important) return "delegate";
+    return "eliminate";
+  };
+
+  const quadrantTasks = {
+    "do-first": todos.filter(t => !t.completed && t.urgent && t.important),
+    "schedule": todos.filter(t => !t.completed && !t.urgent && t.important),
+    "delegate": todos.filter(t => !t.completed && t.urgent && !t.important),
+    "eliminate": todos.filter(t => !t.completed && !t.urgent && !t.important),
+  };
+
   const daysInMonth = new Date(
     new Date().getFullYear(),
     new Date().getMonth() + 1,
@@ -140,7 +168,6 @@ export default function Tasks() {
     }
   };
 
-  // Function to handle Enter key press
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && taskName.trim()) {
       addTodo();
@@ -151,22 +178,41 @@ export default function Tasks() {
     <>
       <Navbar />
       
-      <button
-        onClick={() => setShowDashboard(!showDashboard)}
-        className="fixed top-24 right-4 z-40 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-900/30 transition-all duration-200 flex items-center gap-2 group shadow-lg shadow-red-900/20"
-      >
-        {showDashboard ? (
-          <>
-            <List className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-            <span>Show Tasks</span>
-          </>
-        ) : (
-          <>
-            <BarChart3 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-            <span>Show Dashboard</span>
-          </>
-        )}
-      </button>
+      <div className="fixed top-24 right-4 z-40 flex flex-col gap-2">
+        <button
+          onClick={() => setShowDashboard(!showDashboard)}
+          className="px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-900/30 transition-all duration-200 flex items-center gap-2 group shadow-lg shadow-red-900/20"
+        >
+          {showDashboard ? (
+            <>
+              <List className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <span>Show Tasks</span>
+            </>
+          ) : (
+            <>
+              <BarChart3 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <span>Show Dashboard</span>
+            </>
+          )}
+        </button>
+
+        <button
+          onClick={() => setShowMatrix(!showMatrix)}
+          className="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl font-semibold hover:shadow-lg transition-all duration-200 flex items-center gap-2 group shadow-lg shadow-purple-900/20"
+        >
+          {showMatrix ? (
+            <>
+              <List className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <span>Hide Matrix</span>
+            </>
+          ) : (
+            <>
+              <Grid3x3 className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+              <span>Eisenhower Matrix</span>
+            </>
+          )}
+        </button>
+      </div>
 
       {showDashboard ? (
         <Dashboard todos={todos} />
@@ -194,6 +240,100 @@ export default function Tasks() {
                 </div>
               </div>
             </header>
+
+            {showMatrix && (
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mb-8 shadow-2xl shadow-purple-900/10">
+                <h2 className="text-xl font-semibold mb-6 text-gray-300 flex items-center gap-2">
+                  <Grid3x3 className="w-5 h-5 text-purple-400" />
+                  Eisenhower Matrix
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                  <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                      <h3 className="font-bold text-red-300">Do First</h3>
+                      <span className="ml-auto text-xs bg-red-500/20 px-2 py-1 rounded-full">{quadrantTasks["do-first"].length}</span>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {quadrantTasks["do-first"].map(task => (
+                        <div key={task.id} className="bg-gray-800/70 p-2 rounded-lg text-sm">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium">{task.name}</span>
+                            <button onClick={() => startEdit(task)} className="text-xs text-gray-400 hover:text-white">edit</button>
+                          </div>
+                          {task.date && <div className="text-xs text-gray-400">📅 {task.date}</div>}
+                        </div>
+                      ))}
+                      {quadrantTasks["do-first"].length === 0 && <p className="text-gray-500 text-sm italic">No urgent & important tasks</p>}
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-900/20 border border-blue-500/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Calendar className="w-5 h-5 text-blue-400" />
+                      <h3 className="font-bold text-blue-300">Schedule</h3>
+                      <span className="ml-auto text-xs bg-blue-500/20 px-2 py-1 rounded-full">{quadrantTasks["schedule"].length}</span>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {quadrantTasks["schedule"].map(task => (
+                        <div key={task.id} className="bg-gray-800/70 p-2 rounded-lg text-sm">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium">{task.name}</span>
+                            <button onClick={() => startEdit(task)} className="text-xs text-gray-400 hover:text-white">edit</button>
+                          </div>
+                          {task.date && <div className="text-xs text-gray-400">📅 {task.date}</div>}
+                        </div>
+                      ))}
+                      {quadrantTasks["schedule"].length === 0 && <p className="text-gray-500 text-sm italic">No important but not urgent tasks</p>}
+                    </div>
+                  </div>
+
+                  
+                  <div className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Zap className="w-5 h-5 text-yellow-400" />
+                      <h3 className="font-bold text-yellow-300">Delegate</h3>
+                      <span className="ml-auto text-xs bg-yellow-500/20 px-2 py-1 rounded-full">{quadrantTasks["delegate"].length}</span>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {quadrantTasks["delegate"].map(task => (
+                        <div key={task.id} className="bg-gray-800/70 p-2 rounded-lg text-sm">
+                          <div className="flex justify-between items-start">
+                            <span className="font-medium">{task.name}</span>
+                            <button onClick={() => startEdit(task)} className="text-xs text-gray-400 hover:text-white">edit</button>
+                          </div>
+                          {task.date && <div className="text-xs text-gray-400">📅 {task.date}</div>}
+                        </div>
+                      ))}
+                      {quadrantTasks["delegate"].length === 0 && <p className="text-gray-500 text-sm italic">No urgent but unimportant tasks</p>}
+                    </div>
+                  </div>
+
+                  
+                  <div className="bg-gray-700/30 border border-gray-600/30 rounded-xl p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertCircle className="w-5 h-5 text-gray-400" />
+                      <h3 className="font-bold text-gray-400">Eliminate</h3>
+                      <span className="ml-auto text-xs bg-gray-500/20 px-2 py-1 rounded-full">{quadrantTasks["eliminate"].length}</span>
+                    </div>
+                    <div className="space-y-2 max-h-64 overflow-y-auto">
+                      {quadrantTasks["eliminate"].map(task => (
+                        <div key={task.id} className="bg-gray-800/70 p-2 rounded-lg text-sm line-through text-gray-500">
+                          {task.name}
+                          <button onClick={() => startEdit(task)} className="ml-2 text-xs text-gray-400 hover:text-white">edit</button>
+                        </div>
+                      ))}
+                      {quadrantTasks["eliminate"].length === 0 && <p className="text-gray-500 text-sm italic">No low‑value tasks</p>}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-4 text-center">
+                  💡 Tip: Drag tasks into quadrants by editing urgency/importance.
+                </p>
+              </div>
+            )}
+
 
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mb-8 shadow-2xl shadow-red-900/10">
               <h2 className="text-xl font-semibold mb-6 text-gray-300 flex items-center gap-2">
@@ -259,10 +399,35 @@ export default function Tasks() {
                     onChange={(e) => setPriority(e.target.value)}
                     className="w-full bg-gray-900/70 border border-gray-700 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 appearance-none cursor-pointer"
                   >
-                    <option value="Low" className="bg-gray-800">Low Priority</option>
-                    <option value="Medium" className="bg-gray-800">Medium Priority</option>
-                    <option value="High" className="bg-gray-800">High Priority</option>
+                    <option value="Low">Low Priority</option>
+                    <option value="Medium">Medium Priority</option>
+                    <option value="High">High Priority</option>
                   </select>
+                </div>
+
+                
+                <div className="space-y-2 col-span-1 md:col-span-2 lg:col-span-1">
+                  <label className="text-sm font-medium text-gray-400 block">Eisenhower Classification</label>
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={urgent}
+                        onChange={(e) => setUrgent(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-red-500 focus:ring-red-500"
+                      />
+                      <span className="text-sm">Urgent</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={important}
+                        onChange={(e) => setImportant(e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
+                      />
+                      <span className="text-sm">Important</span>
+                    </label>
+                  </div>
                 </div>
                 
                 <div className="space-y-2">
@@ -307,6 +472,7 @@ export default function Tasks() {
               </div>
             </div>
 
+            
             <div className="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center justify-between">
               <div className="flex flex-wrap gap-3">
                 {["all", "active", "completed", "today"].map((f) => (
@@ -362,6 +528,7 @@ export default function Tasks() {
               </div>
             </div>
 
+            
             <div className="space-y-4 mb-10">
               {filteredTodos.length === 0 ? (
                 <div className="text-center py-12 bg-gray-800/30 rounded-2xl border border-gray-700/50">
@@ -403,6 +570,10 @@ export default function Tasks() {
                       setEditTags={setEditTags}
                       editNotes={editNotes}
                       setEditNotes={setEditNotes}
+                      editUrgent={editUrgent}
+                      setEditUrgent={setEditUrgent}
+                      editImportant={editImportant}
+                      setEditImportant={setEditImportant}
                       saveEdit={saveEdit}
                     />
                   ))}
@@ -410,6 +581,7 @@ export default function Tasks() {
               )}
             </div>
 
+            
             <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700 rounded-2xl p-6 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-semibold text-gray-300 flex items-center gap-2">

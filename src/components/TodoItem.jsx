@@ -20,6 +20,10 @@ export default function TodoItem({
   setEditTags,
   editNotes,
   setEditNotes,
+  editUrgent,
+  setEditUrgent,
+  editImportant,
+  setEditImportant,
   saveEdit,
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -48,6 +52,13 @@ export default function TodoItem({
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
+  };
+
+  const getQuadrantBadge = () => {
+    if (todo.urgent && todo.important) return { text: "Do First", color: "bg-red-900/40 text-red-300 border-red-500/40" };
+    if (!todo.urgent && todo.important) return { text: "Schedule", color: "bg-blue-900/40 text-blue-300 border-blue-500/40" };
+    if (todo.urgent && !todo.important) return { text: "Delegate", color: "bg-yellow-900/40 text-yellow-300 border-yellow-500/40" };
+    return { text: "Eliminate", color: "bg-gray-700/50 text-gray-400 border-gray-600/40" };
   };
 
   useEffect(() => {
@@ -123,6 +134,30 @@ export default function TodoItem({
           </div>
           
           <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-400 block">Eisenhower Matrix</label>
+            <div className="flex gap-4 bg-gray-900/50 p-3 rounded-xl border border-gray-700">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={editUrgent}
+                  onChange={(e) => setEditUrgent(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-red-500 focus:ring-red-500"
+                />
+                <span className="text-sm text-gray-300">Urgent</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={editImportant}
+                  onChange={(e) => setEditImportant(e.target.checked)}
+                  className="w-4 h-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-300">Important</span>
+              </label>
+            </div>
+          </div>
+          
+          <div className="space-y-2">
             <label className="text-sm font-medium text-gray-400 block">Tags</label>
             <input
               value={editTags}
@@ -167,6 +202,8 @@ export default function TodoItem({
       </div>
     );
   }
+
+  const quadrant = getQuadrantBadge();
 
   return (
     <li className={`
@@ -253,12 +290,20 @@ export default function TodoItem({
                 )}
               </div>
               
-              {todo.priority && (
-                <div className={`${priorityColors[todo.priority]} text-white px-3 py-1.5 rounded-xl flex items-center gap-2 text-sm font-medium shadow-lg`}>
-                  {priorityIcons[todo.priority]}
-                  <span>{todo.priority}</span>
+              <div className="flex flex-col items-end gap-2">
+                {todo.priority && (
+                  <div className={`${priorityColors[todo.priority]} text-white px-3 py-1.5 rounded-xl flex items-center gap-2 text-sm font-medium shadow-lg`}>
+                    {priorityIcons[todo.priority]}
+                    <span>{todo.priority}</span>
+                  </div>
+                )}
+                <div className={`${quadrant.color} border px-3 py-1.5 rounded-xl text-sm font-medium flex items-center gap-1 shadow-sm`}>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                  <span>{quadrant.text}</span>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-3 mt-2">
